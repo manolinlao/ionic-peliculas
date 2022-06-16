@@ -21,6 +21,12 @@ export class MoviesService {
         return this.http.get<T>(query);
     }
 
+    getPopulares() {
+        const query = '/discover/movie?sort_by=popularity.desc';
+
+        return this.ejecutarQuery<RespuestaMDB>(query);
+    }
+
     getFeature() {
         const hoy = new Date();
         const ultimoDia = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
