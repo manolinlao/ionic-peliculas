@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-inferrable-types */
 /* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable max-len */
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {RespuestaMDB} from '../interfaces/interfaces';
+import {RespuestaMDB, PeliculaDetalle, RespuestaCredits} from '../interfaces/interfaces';
 import {environment} from '../../environments/environment';
 
 const URL = environment.url;
@@ -12,6 +13,8 @@ const apiKey = environment.apiKey;
     providedIn: 'root',
 })
 export class MoviesService {
+    private popularesPage: number = 0;
+
     constructor(private http: HttpClient) {}
 
     private ejecutarQuery<T>(query: string) {
@@ -22,9 +25,15 @@ export class MoviesService {
     }
 
     getPopulares() {
-        const query = '/discover/movie?sort_by=popularity.desc';
+        this.popularesPage++;
+
+        const query = `/discover/movie?sort_by=popularity.desc&page=${this.popularesPage}`;
 
         return this.ejecutarQuery<RespuestaMDB>(query);
+    }
+
+    buscarPeliculas(texto: string) {
+        return this.ejecutarQuery<RespuestaMDB>(`/search/movie?query=${texto}`);
     }
 
     getFeature() {
@@ -41,5 +50,12 @@ export class MoviesService {
         return this.ejecutarQuery<RespuestaMDB>(
             `/discover/movie?primary_release_date.gte=${inicio}&primary_release_date.lte=${fin}`
         );
+    }
+
+    getPeliculaDetalle(id: string) {
+        return this.ejecutarQuery<PeliculaDetalle>(`/movie/${id}?a=1`);
+    }
+    getActoresPelicula(id: string) {
+        return this.ejecutarQuery<RespuestaCredits>(`/movie/${id}/credits?a=1`);
     }
 }
